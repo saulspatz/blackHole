@@ -2,6 +2,7 @@
 import random
 import itertools 
 import sys
+import os
 import subprocess
 import re
 
@@ -72,7 +73,8 @@ class Model:
         f is a boolean indicating whether or not the top card of the source stack is flipped,
         except that the entry (0, 0, 10, 0) connotes dealing a row of cards. 
       '''
-    def __init__(self):
+    def __init__(self, parent):
+        self.parent = parent
         self.solnPattern = re.compile(r'Move.*?([0-9]+).*?foundations')
         random.seed()
         self.deck = []
@@ -82,9 +84,7 @@ class Model:
         self.tableau = [ Pile() for _ in range(17) ]
         self.hole = [ ] 
         self.solverProc = None
-        self.shuffle()
-        self.deal()
-
+        
     def shuffle(self):
         for w in self.tableau:
             w.clear()
@@ -97,9 +97,6 @@ class Model:
         for rank, suit in itertools.product(ALLRANKS, SUIT_NAMES):
             self.deck.append(Card(rank, suit))
             
-    def bigDeal(self):
-        text= open('solver/test/big.txt').read().split()
-
     def deal(self, shuffle=True):
         if shuffle:
             self.shuffle()
@@ -194,7 +191,8 @@ class Model:
         except:
             pass
         self.board = self.boardString()
-        args = 'echo '+'"'+self.board+'"' ' | ' + './black-hole-solve '
+        cmd = os.path.join(self.parent.runDir,'black-hole-solve')
+        args = 'echo '+'"'+self.board+'"' ' | ' +cmd+ ' '
         args += '--game black_hole --rank-reach-prune --max-iters 75000000'
         self.solverProc = subprocess.Popen(args, universal_newlines=True, 
                                            stdout=subprocess.PIPE, shell=True)
@@ -219,6 +217,7 @@ class Model:
         return ('solved')
     
     def saveGame(self):
-        pass
+        dirname = os.path.join(self.parent.runDir,'savedGames')
+        print(len(os.listdir(dirname)))
+        
                                     
-model = Model()

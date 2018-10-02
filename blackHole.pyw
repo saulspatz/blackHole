@@ -2,7 +2,7 @@
 '''
 Black hole solitaire
 '''
-import model
+from model import Model
 from view import View
 try:
     import tkinter as tk
@@ -42,10 +42,15 @@ still redo all your moves.
 '''        
 class BlackHole:
     def __init__(self):
-        self.model = model.model
+        cwd = os.getcwd()
+        progDir= os.path.dirname(sys.argv[0])
+        self.runDir = os.path.join(cwd, progDir)       
+        model = self.model = Model(self)
+        model.shuffle()
+        model.deal()
         self.view = View(self, self.quit)
-        self.makeHelp()
         self.makeMenu() 
+        self.makeHelp()
         self.view.start()      #  start the event loop
 
     def deal(self):
