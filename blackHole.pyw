@@ -92,6 +92,7 @@ class BlackHole:
         self.helpText.text.see('1.0')  
         
     def quit(self):
+        self.model.solverProc.kill()
         self.view.root.quit()
 
 if __name__ == "__main__":
