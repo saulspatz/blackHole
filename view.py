@@ -87,14 +87,11 @@ class View:
                 self.tableau.append((x, y))
                 x += XSPACING
         x = 4*MARGIN + 2*XSPACING
-        y = 6*MARGIN + 1.5*YSPACING
+        y = 6*MARGIN + 1.5*(YSPACING+OFFSET)
         self.hole = (x,y)
         canvas = self.canvas = tk.Canvas(root, bg=BACKGROUND, cursor=DEFAULT_CURSOR, 
                                                              bd=0, highlightthickness=0, width = width)
         canvas.pack(expand=tk.YES, fill=tk.Y)
-        #width = kwargs['width']
-        #height = kwargs['height']
-
         self.loadImages()
         self.createCards()
         canvas.tag_bind("card", '<Double-Button-1>', self.onDoubleClick)
@@ -103,7 +100,7 @@ class View:
             canvas.create_rectangle(t[0], t[1], t[0]+CARDWIDTH, t[1]+CARDHEIGHT, 
                                                     fill=PILEFILL, outline=PILEFILL)
         x,y = self.hole
-        canvas.create_rectangle(x, y, x+CARDWIDTH, x+CARDHEIGHT, 
+        canvas.create_rectangle(x, y, x+CARDWIDTH, y+CARDHEIGHT, 
                                                     fill=PILEFILL, outline=PILEFILL)
         
         self.buttons = ButtonBar(canvas)
