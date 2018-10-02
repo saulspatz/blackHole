@@ -65,5 +65,7 @@ target/
 *.wpr
 *.wpu
 
-/solver
+#Project specific
+/solver/text/
+
 
