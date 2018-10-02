@@ -92,6 +92,7 @@ class Model:
         d = self.deck[1:]
         random.shuffle(d)
         self.deck[1:]=d
+        self.solved=False
 
     def createCards(self):
         for rank, suit in itertools.product(ALLRANKS, SUIT_NAMES):
@@ -102,7 +103,7 @@ class Model:
             self.shuffle()
         for n, card in enumerate(self.deck[1:]):
             self.tableau[n%17].append(card)
-        self.hole.append(self.deck[0])
+        self.hole = [self.deck[0]]
         self.undoStack = []
         self.redoStack = []         
       
@@ -206,18 +207,27 @@ class Model:
             return 'unsolved'
         if status == 254:
             return 'intractable'
-        out = proc.stdout.read()
-        pattern=self.solnPattern
-        soln = [int(s) for s in pattern.findall(out)]
+        if not self.solved:
+            out = proc.stdout.read()
+            pattern=self.solnPattern
+            self.soln = [int(s) for s in pattern.findall(out)]
+            self.solved = True
         for t in self.tableau:
             t.clear()
         self.deal(False)
         self.undoStack = []
-        self.redoStack = list(reversed(soln)) 
+        self.redoStack = list(reversed(self.soln)) 
         return ('solved')
     
     def saveGame(self):
         dirname = os.path.join(self.parent.runDir,'savedGames')
-        print(len(os.listdir(dirname)))
-        
-                                    
+        length = 1+len([f for f in os.listdir(dirname) if f.startswith('board')])
+        name = 'board%d.txt'%length
+        filename = os.path.join(dirname, name)
+        deck = self.deck
+        with open(filename, 'w') as fout:
+            fout.write('Foundations: AS\n')
+            for c in range(1,18):
+                for idx in range(c, 52, 17):
+                    fout.write('%s '%(deck[idx].code))
+                fout.write('\n')

@@ -208,15 +208,14 @@ class View:
         model = self.model
         status = model.readSolution()
         if status == 'running':
-            messagebox.showinfo('Computing','Try again later')
+            messagebox.showinfo('Working On It','Try again in a little while')
         elif status == 'unsolved':
             messagebox.showinfo('Unsolved','No solution')
         elif status == 'intractable':
             if messagebox.askyesno('Intractable', 'Save game file?'):
                 model.saveGame()
         else:
-            model.saveGame()
-            messagebox.showinfo('Solved','Press redo to see solution')           
+            messagebox.showinfo('Solved','Press redo to see solution') 
             self.show()
 
     def disableRedo(self):
