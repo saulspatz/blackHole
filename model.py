@@ -1,8 +1,9 @@
 # model.py Model for black hole
-import random, itertools,sys
-from collections import namedtuple
-
-UndoRecord = namedtuple('Undorecord', 'source target cards auto'.split())
+import random
+import itertools 
+import sys
+import subprocess
+import re
 
 ACE = 1
 JACK = 11
@@ -72,6 +73,7 @@ class Model:
         except that the entry (0, 0, 10, 0) connotes dealing a row of cards. 
       '''
     def __init__(self):
+        self.solnPattern = re.compile(r'Move.*?([0-9]+).*?foundations')
         random.seed()
         self.deck = []
         self.undoStack = []
@@ -79,6 +81,8 @@ class Model:
         self.createCards()
         self.tableau = [ Pile() for _ in range(17) ]
         self.hole = [ ] 
+        self.solverProc = None
+        self.shuffle()
         self.deal()
 
     def shuffle(self):
@@ -92,15 +96,25 @@ class Model:
     def createCards(self):
         for rank, suit in itertools.product(ALLRANKS, SUIT_NAMES):
             self.deck.append(Card(rank, suit))
+            
+    def bigDeal(self):
+        text= open('solver/test/big.txt').read().split()
 
-    def deal(self):
-        self.shuffle()
+    def deal(self, shuffle=True):
+        if shuffle:
+            self.shuffle()
         for n, card in enumerate(self.deck[1:]):
             self.tableau[n%17].append(card)
         self.hole.append(self.deck[0])
         self.undoStack = []
-        self.redoStack = []    
-
+        self.redoStack = []         
+      
+        # *** SIDE EFFECTS  ***
+        # solve will set self.solverProc, self.board
+        # and self.solution    
+        if shuffle:
+            self.solve()
+   
     def gameWon(self):
         '''
         The game is won when all cards are in the balck hole
@@ -167,5 +181,44 @@ class Model:
     def restart(self):
         while self.canUndo():
             self.undo()
-                         
+            
+    def boardString(self):
+        board = 'Foundations: AS\n'
+        for t in self.tableau:
+            board += '%s %s %s\n'%(t[0].code,t[1].code,t[2].code)
+        return board
+    
+    def solve(self):
+        try:
+            self.solverProc.kill()
+        except:
+            pass
+        self.board = self.boardString()
+        args = 'echo '+'"'+self.board+'"' ' | ' + './black-hole-solve '
+        args += '--game black_hole --rank-reach-prune --max-iters 75000000'
+        self.solverProc = subprocess.Popen(args, universal_newlines=True, 
+                                           stdout=subprocess.PIPE, shell=True)
+        
+    def readSolution(self):
+        proc = self.solverProc
+        status = proc.poll()
+        if status == None:
+            return 'running'
+        if status == 255:
+            return 'unsolved'
+        if status == 254:
+            return 'intractable'
+        out = proc.stdout.read()
+        pattern=self.solnPattern
+        soln = [int(s) for s in pattern.findall(out)]
+        for t in self.tableau:
+            t.clear()
+        self.deal(False)
+        self.undoStack = []
+        self.redoStack = list(reversed(soln)) 
+        return ('solved')
+    
+    def saveGame(self):
+        pass
+                                    
 model = Model()

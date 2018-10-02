@@ -11,6 +11,7 @@ except ImportError:
     import Tkinter as tk
     from tkMessageBox import showerror, showinfo, askokcancel
 import sys, os
+import  subprocess
 
 helpText = '''
 This program implements Black Hole solitaire.
@@ -89,7 +90,7 @@ class BlackHole:
     def showHelp(self):
         self.helpText.deiconify()
         self.helpText.text.see('1.0')  
-
+        
     def quit(self):
         self.view.root.quit()
 

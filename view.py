@@ -39,9 +39,10 @@ class ButtonBar(tk.Canvas):
         tk.Canvas.__init__(self,parent, bg=BACKGROUND, bd=0, highlightthickness=0)
         self.configure(height=5*MARGIN,width=6*XSPACING)
         width=int(self['width'])
-        self.makeButton(width//2-12*MARGIN, 'undo')
-        self.makeButton(width//2-4*MARGIN, 'redo')
-        self.makeButton(width//2+4*MARGIN, 'restart')
+        self.makeButton(width//2-15*MARGIN, 'undo')
+        self.makeButton(width//2-7*MARGIN, 'redo')
+        self.makeButton(width//2+1*MARGIN, 'solve')
+        self.makeButton(width//2+9*MARGIN, 'restart')
         self.place(in_=parent, relx=.5,y=0,anchor=tk.N)    
 
     def makeButton(self, left, text):
@@ -109,6 +110,7 @@ class View:
         self.buttons.tag_bind('undo', '<ButtonPress-1>', self.undo)
         self.buttons.tag_bind('redo', '<ButtonPress-1>', self.redo)
         self.buttons.tag_bind('restart', '<ButtonPress-1>', self.restart)
+        self.buttons.tag_bind('solve', '<ButtonPress-1>', self.solve)
         self.show()
 
     def start(self):
@@ -201,6 +203,23 @@ class View:
     def restart(self, event):
         self.model.restart()
         self.show()
+        
+    def solve(self, event):
+        model = self.model
+        status = model.readSolution()
+        if status == 'running':
+            messagebox.showinfo('Computing','Try again later')
+        elif status == 'unsolved':
+            messagebox.showinfo('Unsolved','No solution')
+        elif status == 'intractable':
+            if messagebox.askyesno('Intractable', 'Save game file?'):
+                model.saveGame()
+        else:
+            messagebox.showinfo('Solved','Press redo to see solution')
+            self.show()
+            
+
+            
 
     def disableRedo(self):
         self.buttons.itemconfigure('redo', state=tk.HIDDEN)
