@@ -159,7 +159,7 @@ class View:
         canvas.itemconfigure(tag, image = foto)
         canvas.tag_raise(tag) 
 
-    def show(self):
+    def show(self, celebrate=True):
         model = self.model
         canvas = self.canvas
         for k in range(17):
@@ -176,6 +176,8 @@ class View:
         canvas.update_idletasks()
         if model.blocked():
             messagebox.showinfo('Blocked','No more moves',parent=self.canvas)
+        if model.won() and celebrate:
+            self.celebrate()
 
     def onDoubleClick(self, event):
         '''
@@ -237,5 +239,28 @@ class View:
     def wm_delete_window(self):
         self.root.destroy()
 
-    def done(self, num):
-        self.root.destroy()    
+    def celebrate(self):
+        canvas = self.canvas
+        width =  canvas.winfo_width()
+        height = canvas.winfo_height()
+        deck = self.model.deck
+        for k in range(52):
+            row, col = divmod(k, 13)
+            x = col * CARDWIDTH
+            y = row * (CARDHEIGHT+2*MARGIN)+6*MARGIN
+            card = deck[k]
+            tag = 'code%s'%card.code
+            canvas.coords(tag, x, y)
+            #foto = imageDict[card.rank, card.suit]
+            #canvas.itemconfigure(tag, image = foto)
+            canvas.tag_raise(tag)            
+        canvas.update_idletasks()
+        canvas.after(300, self.uncelebrate)
+        
+    def uncelebrate(self):
+        canvas = self.canvas
+        deck = self.model.deck
+        x,y = self.hole
+        for item in canvas.find_withtag('card'):
+            canvas.coords(item, x, y)
+        self.show(False)
