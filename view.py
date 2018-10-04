@@ -16,10 +16,11 @@ from model import SUIT_NAMES, RANK_NAMES, ALLRANKS, SUIT_SYMBOLS, Card
 
 CARDWIDTH = 85
 CARDHEIGHT = 128
-OFFSET = 23
+YOFFSET = 23
+XOFFSET = 35
 MARGIN = 10
-XSPACING = CARDWIDTH + 3*MARGIN
-YSPACING = CARDHEIGHT + 6*MARGIN
+XSPACING = CARDWIDTH + 2*MARGIN +2*XOFFSET
+YSPACING = CARDHEIGHT + 1*MARGIN
 
 BACKGROUND = '#070'
 PILEFILL = 'OliveDrab4' # fill color of piles
@@ -62,8 +63,8 @@ class View:
         self.model =  parent.model
         self.root = root = tk.Tk()
         root.protocol('WM_DELETE_WINDOW', quit)
-        width = 5*MARGIN+5*XSPACING
-        self.root.wm_geometry('%dx850-10+10'%width)
+        width = 6*MARGIN+5*XSPACING
+        self.root.wm_geometry('%dx666-10+10'%width)
         root.title("Black Hole Solitaire")
 
         root.minsize(width=width, height=500)
@@ -71,24 +72,8 @@ class View:
         self.menu = tk.Menu(root)         # parent constructs actual menu         
         root.config(menu=self.menu)                 
         self.tableau = []           # NW corners of the tableau piles
-        x = 4*MARGIN
-        y = 6* MARGIN
-        for k in range(5):
-            self.tableau.append((x, y))
-            x += XSPACING
-        for row in range(3):
-            y += YSPACING
-            x = 4*MARGIN
-            for _ in range(2):
-                self.tableau.append((x, y))
-                x += XSPACING
-            x += XSPACING
-            for _ in range(2):
-                self.tableau.append((x, y))
-                x += XSPACING
-        x = 4*MARGIN + 2*XSPACING
-        y = 6*MARGIN + 1.5*(YSPACING+OFFSET)
-        self.hole = (x,y)
+        self.makePiles()
+
         canvas = self.canvas = tk.Canvas(root, bg=BACKGROUND, cursor=DEFAULT_CURSOR, 
                                                              bd=0, highlightthickness=0, width = width)
         canvas.pack(expand=tk.YES, fill=tk.Y)
@@ -112,7 +97,27 @@ class View:
 
     def start(self):
         self.root.mainloop()
-
+        
+    def makePiles(self):
+        x = 4*MARGIN
+        y = 6* MARGIN
+        for k in range(5):
+            self.tableau.append((x, y))
+            x += XSPACING
+        for row in range(3):
+            y += YSPACING
+            x = 4*MARGIN
+            for _ in range(2):
+                self.tableau.append((x, y))
+                x += XSPACING
+            x += XSPACING
+            for _ in range(2):
+                self.tableau.append((x, y))
+                x += XSPACING
+        x = 4*MARGIN + 2*XSPACING + XOFFSET
+        y = 6*MARGIN + 1.5*(YSPACING+YOFFSET)
+        self.hole = (x,y)   
+            
     def loadImages(self):
         PhotoImage = tk.PhotoImage
         cardDir = os.path.join(self.parent.runDir, 'cards') 
@@ -137,7 +142,7 @@ class View:
             tag = 'code%s'%card.code
             canvas.coords(tag, x, y)
             foto = imageDict[card.rank, card.suit]
-            y += OFFSET
+            x += XOFFSET
             canvas.itemconfigure(tag, image = foto)
             canvas.tag_raise(tag) 
             
