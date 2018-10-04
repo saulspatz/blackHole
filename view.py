@@ -210,14 +210,14 @@ class View:
         model = self.model
         status = model.readSolution()
         if status == 'running':
-            messagebox.showinfo('Working On It','Try again in a little while')
+            messagebox.showinfo('Working On It','Try again in a little while',parent=self.canvas)
         elif status == 'unsolved':
-            messagebox.showinfo('Unsolved','No solution')
+            messagebox.showinfo('Unsolved','No solution',parent=self.canvas)
         elif status == 'intractable':
-            if messagebox.askyesno('Intractable', 'Save game file?'):
+            if messagebox.askyesno('Intractable', 'Save game file?',parent=self.canvas):
                 model.saveGame()
         else:
-            messagebox.showinfo('Solved','Press redo to see solution') 
+            messagebox.showinfo('Solved','Press redo to see solution', parent=self.canvas) 
             self.show()
 
     def disableRedo(self):
