@@ -113,15 +113,9 @@ class Model:
         if shuffle:
             self.solve()
    
-    def gameWon(self):
-        '''
-        The game is won when all cards are in the balck hole
-        '''
-        return len(self.hole) == 52
-
     def move(self, k):
         '''
-        Move top card from tableau[k] to balck hole.
+        Move top card from tableau[k] to black hole.
         Return True if the move is successful, else False
 
         '''
