@@ -251,8 +251,6 @@ class View:
             card = deck[k]
             tag = 'code%s'%card.code
             canvas.coords(tag, x, y)
-            #foto = imageDict[card.rank, card.suit]
-            #canvas.itemconfigure(tag, image = foto)
             canvas.tag_raise(tag)            
         canvas.update_idletasks()
         canvas.after(300, self.uncelebrate)
