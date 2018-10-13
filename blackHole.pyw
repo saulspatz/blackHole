@@ -17,28 +17,38 @@ helpText = '''
 This program implements Black Hole solitaire.
 
 OBJECTIVE
+
 The game is played with a deck of 52 cards.\
 The objective in each game is to move all cards to a single pile.
 
 
 SETUP
+
 There are 17 tableau piles of 3 cards each and a central foundation  pile, \
 the "black hole," initially containing the Ace of Spades.
 
 MOVING CARDS
+
 The cards in the the top cards of the tableau piles \
 are available for play.  A card can be move to the black hole if it differs in rank \
 by one from the card currently on top of the black hole.  An Ace is both high and \
-low, so that the ranks are cyclic.  Chaning direction is permitted, so you can
+low, so that the ranks are cyclic.  Changing direction is permitted, so you can
 put a 4 on top of a 5 and then a 5 on toip of the 4.
 
 Suits are ignored.
 
 BUTTONS
+
 The "Undo" and Redo" buttons are self-explanatory.  \
 The "Restart" button puts the game back to the beginning, but you can \
-still redo all your moves. 
+still redo all your moves.  The "Solve" button finds a solution, \
+or reports that none exists  \
+If a solution is found, the game is set to the start and you can see the solution \
+by repeatedly pressing "Redo."  
 
+Occasionally, the solver will not be able to determine \
+whether a solution exists, because of resource limitations.  Then you will be offered \
+the opportunity to save the game for later analysis.
 '''        
 class BlackHole:
     def __init__(self):
